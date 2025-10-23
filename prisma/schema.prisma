@@ -1,0 +1,281 @@
+// Campus Voice Database Schema
+// Converted from MySQL to PostgreSQL with Prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Users Table
+model User {
+  id            Int      @id @default(autoincrement())
+  firstName     String   @map("first_name") @db.VarChar(100)
+  lastName      String   @map("last_name") @db.VarChar(100)
+  email         String   @unique @db.VarChar(255)
+  password      String   @db.VarChar(255)
+  phone         String?  @db.VarChar(20)
+  department    String?  @db.VarChar(100)
+  yearOfStudy   Int?     @map("year_of_study")
+  role          Role     @default(STUDENT)
+  profileImage  String?  @map("profile_image") @db.VarChar(255)
+  isActive      Boolean  @default(true) @map("is_active")
+  emailVerified Boolean  @default(false) @map("email_verified")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  lastLogin     DateTime? @map("last_login")
+
+  // Relations
+  feedback           Feedback[]
+  feedbackComments   FeedbackComment[]
+  feedbackVotes      FeedbackVote[]
+  polls              Poll[]
+  pollVotes          PollVote[]
+  notifications      Notification[]
+  activityLogs       ActivityLog[]
+
+  @@map("users")
+}
+
+// Feedback Categories Table
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String?
+  icon        String?  @db.VarChar(50)
+  color       String?  @db.VarChar(20)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  feedback Feedback[]
+
+  @@map("categories")
+}
+
+// Feedback Table
+model Feedback {
+  id              Int           @id @default(autoincrement())
+  userId          Int           @map("user_id")
+  categoryId      Int           @map("category_id")
+  title           String        @db.VarChar(255)
+  description     String
+  location        String?       @db.VarChar(255)
+  priority        Priority      @default(MEDIUM)
+  status          Status        @default(PENDING)
+  isAnonymous     Boolean       @default(false) @map("is_anonymous")
+  attachments     Json?
+  upvotes         Int           @default(0)
+  views           Int           @default(0)
+  adminResponse   String?       @map("admin_response")
+  resolvedAt      DateTime?     @map("resolved_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category          Category            @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  comments          FeedbackComment[]
+  votes             FeedbackVote[]
+  socialMediaPosts  SocialMediaPost[]
+
+  @@map("feedback")
+}
+
+// Feedback Comments Table
+model FeedbackComment {
+  id              Int      @id @default(autoincrement())
+  feedbackId      Int      @map("feedback_id")
+  userId          Int      @map("user_id")
+  comment         String
+  isAdminResponse Boolean  @default(false) @map("is_admin_response")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  feedback Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("feedback_comments")
+}
+
+// Feedback Votes Table
+model FeedbackVote {
+  id         Int      @id @default(autoincrement())
+  feedbackId Int      @map("feedback_id")
+  userId     Int      @map("user_id")
+  voteType   VoteType @map("vote_type")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  feedback Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([feedbackId, userId])
+  @@map("feedback_votes")
+}
+
+// Polls Table
+model Poll {
+  id                  Int      @id @default(autoincrement())
+  title               String   @db.VarChar(255)
+  description         String?
+  createdBy           Int      @map("created_by")
+  startDate           DateTime @default(now()) @map("start_date")
+  endDate             DateTime? @map("end_date")
+  isActive            Boolean  @default(true) @map("is_active")
+  allowMultipleVotes  Boolean  @default(false) @map("allow_multiple_votes")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  creator User         @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  options PollOption[]
+  votes   PollVote[]
+
+  @@map("polls")
+}
+
+// Poll Options Table
+model PollOption {
+  id        Int      @id @default(autoincrement())
+  pollId    Int      @map("poll_id")
+  optionText String  @map("option_text") @db.VarChar(255)
+  voteCount Int      @default(0) @map("vote_count")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  poll  Poll        @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes PollVote[]
+
+  @@map("poll_options")
+}
+
+// Poll Votes Table
+model PollVote {
+  id       Int      @id @default(autoincrement())
+  pollId   Int      @map("poll_id")
+  optionId Int      @map("option_id")
+  userId   Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  poll    Poll        @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  option  PollOption  @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, userId])
+  @@map("poll_votes")
+}
+
+// Social Media Posts Table
+model SocialMediaPost {
+  id               Int      @id @default(autoincrement())
+  platform         Platform
+  postId           String   @unique @map("post_id") @db.VarChar(255)
+  postUrl          String?  @map("post_url") @db.VarChar(500)
+  content          String
+  authorUsername   String?  @map("author_username") @db.VarChar(255)
+  authorName       String?  @map("author_name") @db.VarChar(255)
+  hashtags         Json?
+  likesCount       Int      @default(0) @map("likes_count")
+  commentsCount    Int      @default(0) @map("comments_count")
+  sharesCount      Int      @default(0) @map("shares_count")
+  postedAt         DateTime? @map("posted_at")
+  fetchedAt        DateTime @default(now()) @map("fetched_at")
+  isProcessed      Boolean  @default(false) @map("is_processed")
+  linkedFeedbackId Int?     @map("linked_feedback_id")
+  sentiment        Sentiment?
+
+  // Relations
+  linkedFeedback Feedback? @relation(fields: [linkedFeedbackId], references: [id], onDelete: SetNull)
+
+  @@map("social_media_posts")
+}
+
+// Notifications Table
+model Notification {
+  id        Int            @id @default(autoincrement())
+  userId    Int            @map("user_id")
+  title     String         @db.VarChar(255)
+  message   String
+  type      NotificationType @default(SYSTEM)
+  relatedId Int?           @map("related_id")
+  isRead    Boolean        @default(false) @map("is_read")
+  createdAt DateTime       @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+// Activity Log Table
+model ActivityLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int?     @map("user_id")
+  action     String   @db.VarChar(100)
+  entityType String?  @map("entity_type") @db.VarChar(50)
+  entityId   Int?     @map("entity_id")
+  ipAddress  String?  @map("ip_address") @db.VarChar(45)
+  userAgent  String?  @map("user_agent")
+  details    Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("activity_log")
+}
+
+// Enums
+enum Role {
+  STUDENT
+  ADMIN
+  MODERATOR
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum Status {
+  PENDING
+  UNDER_REVIEW
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}
+
+enum Platform {
+  TWITTER
+  INSTAGRAM
+  TIKTOK
+  FACEBOOK
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+enum NotificationType {
+  FEEDBACK_UPDATE
+  COMMENT
+  POLL
+  ANNOUNCEMENT
+  SYSTEM
+}
