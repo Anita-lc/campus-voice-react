@@ -212,7 +212,7 @@ const ViewFeedback: React.FC = () => {
         <Alert variant="danger">
           {error || 'Feedback not found'}
         </Alert>
-        <Button as={Link} to="/my-feedback" variant="primary">
+        <Button as={Link as any} to="/my-feedback" variant="primary">
           <FaArrowLeft className="me-2" />
           Back to My Feedback
         </Button>
@@ -225,7 +225,7 @@ const ViewFeedback: React.FC = () => {
       <Row>
         <Col>
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <Button as={Link} to="/my-feedback" variant="outline-secondary">
+            <Button as={Link as any} to="/my-feedback" variant="outline-secondary">
               <FaArrowLeft className="me-2" />
               Back to My Feedback
             </Button>

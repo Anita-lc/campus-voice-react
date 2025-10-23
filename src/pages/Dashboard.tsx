@@ -156,15 +156,6 @@ const Dashboard: React.FC = () => {
                   <FaComments className="me-2" />
                   Polls & Surveys
                 </Link>
-                {user?.role === 'ADMIN' && (
-                  <>
-                    <hr />
-                    <Link to="/admin" className="nav-link">
-                      <FaComments className="me-2" />
-                      Admin Panel
-                    </Link>
-                  </>
-                )}
               </nav>
             </Card.Body>
           </Card>
@@ -174,7 +165,7 @@ const Dashboard: React.FC = () => {
         <Col md={9} lg={10}>
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h2>Welcome back, {user?.firstName}!</h2>
-            <Button as={Link} to="/submit-feedback" variant="primary">
+            <Button as={Link as any} to="/submit-feedback" variant="primary">
               <FaPlus className="me-2" />
               Submit Feedback
             </Button>
@@ -246,7 +237,7 @@ const Dashboard: React.FC = () => {
                 <div className="text-center py-5">
                   <FaInbox size={48} className="text-muted mb-3" />
                   <p className="text-muted">You haven't submitted any feedback yet.</p>
-                  <Button as={Link} to="/submit-feedback" variant="primary">
+                  <Button as={Link as any} to="/submit-feedback" variant="primary">
                     Submit Your First Feedback
                   </Button>
                 </div>
@@ -278,7 +269,7 @@ const Dashboard: React.FC = () => {
                           <td>{formatDate(feedback.createdAt)}</td>
                           <td>
                             <Button
-                              as={Link}
+                              as={Link as any}
                               to={`/feedback/${feedback.id}`}
                               variant="outline-primary"
                               size="sm"
@@ -291,7 +282,7 @@ const Dashboard: React.FC = () => {
                     </tbody>
                   </Table>
                   <div className="text-center mt-3">
-                    <Button as={Link} to="/my-feedback" variant="outline-primary">
+                    <Button as={Link as any} to="/my-feedback" variant="outline-primary">
                       View All Feedback
                     </Button>
                   </div>

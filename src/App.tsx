@@ -18,9 +18,10 @@ import AdminDashboard from './pages/AdminDashboard';
 import LoadingSpinner from './components/LoadingSpinner';
 
 // Protected Route Component
-const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: boolean }> = ({ 
+const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: boolean; userOnly?: boolean }> = ({ 
   children, 
-  adminOnly = false 
+  adminOnly = false,
+  userOnly = false
 }) => {
   const { user, loading } = useAuth();
 
@@ -32,8 +33,14 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: boolean 
     return <Navigate to="/login" replace />;
   }
 
+  // Redirect admins to admin dashboard
   if (adminOnly && user.role !== 'ADMIN') {
     return <Navigate to="/dashboard" replace />;
+  }
+
+  // Redirect admins away from user-only pages
+  if (userOnly && user.role === 'ADMIN') {
+    return <Navigate to="/admin" replace />;
   }
 
   return <>{children}</>;
@@ -48,7 +55,8 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }
 
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    // Redirect based on role
+    return <Navigate to={user.role === 'ADMIN' ? '/admin' : '/dashboard'} replace />;
   }
 
   return <>{children}</>;
@@ -82,7 +90,7 @@ function App() {
               <Route 
                 path="/dashboard" 
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute userOnly>
                     <Dashboard />
                   </ProtectedRoute>
                 } 
@@ -90,7 +98,7 @@ function App() {
               <Route 
                 path="/submit-feedback" 
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute userOnly>
                     <SubmitFeedback />
                   </ProtectedRoute>
                 } 
@@ -98,7 +106,7 @@ function App() {
               <Route 
                 path="/my-feedback" 
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute userOnly>
                     <MyFeedback />
                   </ProtectedRoute>
                 } 
@@ -106,7 +114,7 @@ function App() {
               <Route 
                 path="/feedback/:id" 
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute userOnly>
                     <ViewFeedback />
                   </ProtectedRoute>
                 } 

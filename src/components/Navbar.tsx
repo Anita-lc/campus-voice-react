@@ -1,12 +1,14 @@
 import React from 'react';
 import { Navbar as BootstrapNavbar, Nav, Container, NavDropdown } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { FaCommentDots, FaBell, FaUser, FaSignOutAlt, FaCog, FaUserShield } from 'react-icons/fa';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const onAdminRoute = location.pathname.startsWith('/admin');
 
   const handleLogout = () => {
     logout();
@@ -27,15 +29,19 @@ const Navbar: React.FC = () => {
           <Nav className="ms-auto">
             {user ? (
               <>
-                <Nav.Link as={Link} to="/dashboard">
-                  Dashboard
+                <Nav.Link as={Link} to={user.role === 'ADMIN' ? '/admin' : '/dashboard'}>
+                  {user.role === 'ADMIN' ? 'Admin Dashboard' : 'Dashboard'}
                 </Nav.Link>
-                <Nav.Link as={Link} to="/submit-feedback">
-                  Submit Feedback
-                </Nav.Link>
-                <Nav.Link as={Link} to="/my-feedback">
-                  My Feedback
-                </Nav.Link>
+                {!onAdminRoute && user.role !== 'ADMIN' && (
+                  <>
+                    <Nav.Link as={Link} to="/submit-feedback">
+                      Submit Feedback
+                    </Nav.Link>
+                    <Nav.Link as={Link} to="/my-feedback">
+                      My Feedback
+                    </Nav.Link>
+                  </>
+                )}
                 
                 <Nav.Link as={Link} to="/notifications" className="position-relative">
                   <FaBell />
@@ -59,13 +65,6 @@ const Navbar: React.FC = () => {
                     <FaCog className="me-2" />
                     Settings
                   </NavDropdown.Item>
-                  
-                  {user.role === 'ADMIN' && (
-                    <NavDropdown.Item as={Link} to="/admin">
-                      <FaUserShield className="me-2" />
-                      Admin Panel
-                    </NavDropdown.Item>
-                  )}
                   
                   <NavDropdown.Divider />
                   <NavDropdown.Item onClick={handleLogout}>

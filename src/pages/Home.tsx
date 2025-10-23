@@ -2,7 +2,8 @@ import React from 'react';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { 
-  FaComments, 
+  FaComments,
+  FaCommentDots,
   FaTasks, 
   FaUserShield, 
   FaRobot, 
@@ -107,10 +108,10 @@ const Home: React.FC = () => {
                 and engage with campus administration effectively.
               </p>
               <div className="d-flex gap-3 mb-5">
-                <Button as={Link} to="/register" variant="light" size="lg">
+                <Button as={Link as any} to="/register" variant="light" size="lg">
                   Get Started
                 </Button>
-                <Button as={Link} to="#features" variant="outline-light" size="lg">
+                <Button as={Link as any} to="#features" variant="outline-light" size="lg">
                   Learn More
                 </Button>
               </div>
@@ -277,7 +278,7 @@ const Home: React.FC = () => {
           <p className="lead mb-4">
             Join hundreds of students who are already improving campus life with their feedback.
           </p>
-          <Button as={Link} to="/register" variant="light" size="lg">
+          <Button as={Link as any} to="/register" variant="light" size="lg">
             Get Started Now
           </Button>
         </Container>

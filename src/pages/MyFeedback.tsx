@@ -70,7 +70,7 @@ const MyFeedback: React.FC = () => {
     }
   };
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFilters(prev => ({
       ...prev,
@@ -148,7 +148,7 @@ const MyFeedback: React.FC = () => {
         <Col>
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h2>My Feedback</h2>
-            <Button as={Link} to="/submit-feedback" variant="primary">
+            <Button as={Link as any} to="/submit-feedback" variant="primary">
               <FaComments className="me-2" />
               Submit New Feedback
             </Button>
@@ -213,7 +213,7 @@ const MyFeedback: React.FC = () => {
                 <div className="text-center py-5">
                   <FaComments size={48} className="text-muted mb-3" />
                   <p className="text-muted">No feedback found matching your criteria.</p>
-                  <Button as={Link} to="/submit-feedback" variant="primary">
+                  <Button as={Link as any} to="/submit-feedback" variant="primary">
                     Submit Your First Feedback
                   </Button>
                 </div>
@@ -267,7 +267,7 @@ const MyFeedback: React.FC = () => {
                         </td>
                         <td>
                           <Button
-                            as={Link}
+                            as={Link as any}
                             to={`/feedback/${item.id}`}
                             variant="outline-primary"
                             size="sm"
