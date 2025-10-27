@@ -1,6 +1,6 @@
 # Campus Voice - React & Prisma Version
 
-A modern web-based feedback system built with React, TypeScript, Node.js, Express, and Prisma with PostgreSQL. This is a complete rewrite of the original PHP-based Campus Voice system.
+A modern web-based feedback system built with React, TypeScript, Node.js, Express, and Prisma with PostgreSQL. 
 
 ## Features
 
